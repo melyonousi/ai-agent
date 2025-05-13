@@ -1,0 +1,45 @@
+# make to use https in SERVER_COMPUTER_NAME (https://siteXXXX.siteasp.net:8172)
+# https://help.monsterasp.net/books/github/page/how-to-deploy-website-via-github-actions
+
+name: Build, publish and deploy to MonsterASP.NET
+on:
+  pull_request:
+    branches: [ "prod" ]
+
+jobs:
+  build_and_deploy:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0
+          
+      - name: Install dependencies
+        run: dotnet restore
+        
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Publish
+        run: dotnet publish --configuration Release --output ./publish --runtime win-x86 
+        
+      - name: Test with .NET
+        run: dotnet test
+
+    #   - name: Deploy to MonsterASP.NET via WebDeploy
+    #     uses: rasmusbuchholdt/simply-web-deploy@2.1.0
+    #     with:
+    #       website-name: ${{ secrets.WEBSITE_NAME }}
+    #       server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
+    #       server-username: ${{ secrets.SERVER_USERNAME }}
+    #       server-password: ${{ secrets.SERVER_PASSWORD }}
+      
+      # - name: Notify Slack
+      #   shell: pwsh
+      #   run: |
+      #     $payload = '{"text":"✅ Deployment to *MonsterASP.NET* from `prod/back` branch is complete!"}'
+      #     curl -Method POST -Uri "${{ secrets.SLACK_WEBHOOK_URL }}" -ContentType 'application/json' -Body $payload
+  

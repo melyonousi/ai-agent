@@ -1,0 +1,16 @@
+@AiAgent_HostAddress = http://localhost:5159
+
+GET {{AiAgent_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+POST {{AiAgent_HostAddress}}/api/order/assign-driver
+Content-Type: application/json
+
+{
+  "city": "Rabat",
+  "quantity": 3
+}
+
+###
